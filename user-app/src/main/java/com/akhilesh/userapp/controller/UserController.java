@@ -1,5 +1,7 @@
 package com.akhilesh.userapp.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.PostConstruct;
@@ -9,6 +11,9 @@ import java.util.List;
 
 @RestController
 public class UserController {
+
+    @Autowired
+    private Environment environment;
     List<String> userList = new ArrayList<>();
 
     @PostConstruct
@@ -43,5 +48,10 @@ public class UserController {
     public String addNewUser(@RequestBody String name) {
         userList.add(name);
         return "Registered User: " + name;
+    }
+
+    @GetMapping("/get-port")
+    public String getCurrentPort() {
+        return "Current port: "+environment.getProperty("local.server.port");
     }
 }
