@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.PostConstruct;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -17,6 +19,20 @@ public class DbUserController {
 
     @Autowired
     BCryptPasswordEncoder passwordEncoder;
+
+    @PostConstruct
+    private void loadData() {
+        List<User> userList = new ArrayList<>();
+        userList.add(User.builder()
+                .name("Akhilesh")
+                .email("akhilesh@yopmail.com")
+                .password(passwordEncoder.encode("test123")).build());
+        userList.add(User.builder()
+                .name("Tejas")
+                .email("tejas@yopmail.com")
+                .password(passwordEncoder.encode("test123")).build());
+        userRepository.saveAll(userList);
+    }
 
     @PostMapping("/add")
     public String createUser(@RequestBody User user) {
