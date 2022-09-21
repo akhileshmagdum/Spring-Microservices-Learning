@@ -52,6 +52,11 @@ public class UserController {
 
     @GetMapping("/get-port")
     public String getCurrentPort() {
-        return "Current port: "+environment.getProperty("local.server.port");
+        return "Current port: " + environment.getProperty("local.server.port");
+    }
+
+    @GetMapping("/something")
+    public String testRouting() {
+        return "Routing works!";
     }
 }
