@@ -1,4 +1,4 @@
-package com.akhilesh.springcloudapigateway.config;
+package com.akhilesh.springcloudapigateway.filter;
 
 import io.jsonwebtoken.Jwts;
 import org.apache.http.HttpHeaders;
