@@ -9,7 +9,7 @@ import reactor.core.publisher.Mono;
 public class GlobalFiltersConfiguration {
 
     @Bean
-    public GlobalFilter myPreFilter() {
+    public GlobalFilter myPrePostFilterViaMethod() {
         return ((exchange, chain) -> {
             System.out.println("\n\nThis is a pre filter from method\n\n");
             return chain.filter(exchange).then(Mono.fromRunnable(() -> {
