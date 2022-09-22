@@ -9,7 +9,7 @@ import reactor.core.publisher.Mono;
 /**
  * Pre-filter - Runs before the request is sent to the microservice
  */
-@Component
+//@Component
 public class MyPreFilter implements GlobalFilter {
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
