@@ -6,11 +6,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.stereotype.Component;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -24,6 +24,9 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Value("${jwt.secret}")
+    private String jwtSecret;
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request,
@@ -48,8 +51,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
         com.akhilesh.userapp.model.User user = userRepository.findByEmail(authResult.getName());
         String token = Jwts.builder().setSubject(user.getId().toString())
                 .setExpiration(new Date(System.currentTimeMillis() + Long.MAX_VALUE))
-                .signWith(SignatureAlgorithm.HS256,
-                        "somethingforjwttokentosignthistokenwith")
+                .signWith(SignatureAlgorithm.HS256, jwtSecret)
                 .compact();
         response.addHeader("token", token);
         response.addHeader("userId", user.getId().toString());

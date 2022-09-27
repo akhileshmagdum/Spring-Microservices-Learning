@@ -2,6 +2,7 @@ package com.akhilesh.springcloudapigateway.filter;
 
 import io.jsonwebtoken.Jwts;
 import org.apache.http.HttpHeaders;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
 import org.springframework.http.HttpStatus;
@@ -13,6 +14,9 @@ import reactor.core.publisher.Mono;
 
 @Component
 public class AuthorizationFilter extends AbstractGatewayFilterFactory<AuthorizationFilter.MyConfig> {
+
+    @Value("${jwt.secret}")
+    private String jwtSecret;
 
     /**
      * All the configurable properties go here
@@ -47,7 +51,7 @@ public class AuthorizationFilter extends AbstractGatewayFilterFactory<Authorizat
 
     private boolean checkJwtValid(String jwt) {
         String subject = Jwts.parser()
-                .setSigningKey("somethingforjwttokentosignthistokenwith")
+                .setSigningKey(jwtSecret)
                 .parseClaimsJws(jwt)
                 .getBody().getSubject();
         if (subject.isEmpty() || subject == null) {
