@@ -1,10 +1,16 @@
 package com.akhilesh.userapp.controller;
 
 import com.akhilesh.userapp.model.User;
+import com.akhilesh.userapp.model.dto.AlbumResponse;
+import com.akhilesh.userapp.model.dto.UserResponse;
 import com.akhilesh.userapp.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
@@ -19,6 +25,9 @@ public class DbUserController {
 
     @Autowired
     BCryptPasswordEncoder passwordEncoder;
+
+    @Autowired
+    RestTemplate restTemplate;
 
     @PostConstruct
     private void loadData() {
@@ -49,8 +58,18 @@ public class DbUserController {
     }
 
     @GetMapping("/{userId}")
-    public User getUser(@PathVariable("userId") Long userId) {
-        return userRepository.findById(userId).orElseThrow();
+    public UserResponse getUser(@PathVariable("userId") Long userId) {
+        String albumURL = "http://ALBUM-APP/users/"+userId+"/albums";
+        ResponseEntity<List<AlbumResponse>> albumListResponse = restTemplate.exchange(albumURL, HttpMethod.GET, null,
+                new ParameterizedTypeReference<List<AlbumResponse>>() {//The JSON sent by url will be converted into the specified type
+        });
+        User user = userRepository.findById(userId).orElseThrow();
+        return UserResponse.builder()
+                .id(userId)
+                .name(user.getName())
+                .email(user.getEmail())
+                .albumList(albumListResponse.getBody())
+                .build();
     }
 
 }
