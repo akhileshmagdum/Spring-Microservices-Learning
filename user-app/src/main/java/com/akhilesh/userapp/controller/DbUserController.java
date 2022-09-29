@@ -24,10 +24,12 @@ public class DbUserController {
     private void loadData() {
         List<User> userList = new ArrayList<>();
         userList.add(User.builder()
+                .id(1L)
                 .name("Akhilesh")
                 .email("akhilesh@yopmail.com")
                 .password(passwordEncoder.encode("test123")).build());
         userList.add(User.builder()
+                .id(2L)
                 .name("Tejas")
                 .email("tejas@yopmail.com")
                 .password(passwordEncoder.encode("test123")).build());
@@ -42,7 +44,13 @@ public class DbUserController {
     }
 
     @GetMapping("/list")
-    private List<User> getAllUsers() {
+    public List<User> getAllUsers() {
         return userRepository.findAll();
     }
+
+    @GetMapping("/{userId}")
+    public User getUser(@PathVariable("userId") Long userId) {
+        return userRepository.findById(userId).orElseThrow();
+    }
+
 }
