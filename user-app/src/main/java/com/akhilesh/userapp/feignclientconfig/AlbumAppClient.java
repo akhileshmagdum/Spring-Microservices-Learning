@@ -1,4 +1,4 @@
-package com.akhilesh.userapp.config;
+package com.akhilesh.userapp.feignclientconfig;
 
 import com.akhilesh.userapp.model.dto.AlbumResponse;
 import org.springframework.cloud.openfeign.FeignClient;
