@@ -1,5 +1,6 @@
 package com.akhilesh.userapp;
 
+import feign.Logger;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
@@ -27,5 +28,10 @@ public class UserAppApplication {
 	@LoadBalanced //To enable client side load balancing
 	public RestTemplate restTemplate() {
 		return new RestTemplate();
+	}
+
+	@Bean
+	Logger.Level feignLoggerLevel() {
+		return Logger.Level.FULL;
 	}
 }
