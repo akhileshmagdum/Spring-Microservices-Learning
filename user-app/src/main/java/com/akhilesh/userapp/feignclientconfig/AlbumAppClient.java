@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 
-@FeignClient(name = "ALBUM-APP", fallbackFactory = AlbumFallbackFactory.class) //Application name from which the apis are accessed
+@FeignClient(name = "ALBUM-APP" /*, fallbackFactory = AlbumFallbackFactory.class*/) //Application name from which the apis are accessed
 public interface AlbumAppClient {
 
     @GetMapping("/users/{id}/albums") //URL at which the particular api is located

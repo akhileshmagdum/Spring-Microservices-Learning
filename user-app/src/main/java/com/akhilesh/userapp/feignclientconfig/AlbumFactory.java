@@ -1,4 +1,4 @@
-package com.akhilesh.userapp.feignclientconfig;
+/*package com.akhilesh.userapp.feignclientconfig;
 
 import com.akhilesh.userapp.model.dto.AlbumResponse;
 
@@ -17,4 +17,4 @@ public class AlbumFactory implements AlbumAppClient {
         System.out.println(throwable.getLocalizedMessage());
         return new ArrayList<>();
     }
-}
+}*/
