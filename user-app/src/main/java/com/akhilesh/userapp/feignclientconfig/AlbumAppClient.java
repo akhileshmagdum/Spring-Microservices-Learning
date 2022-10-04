@@ -2,6 +2,7 @@ package com.akhilesh.userapp.feignclientconfig;
 
 import com.akhilesh.userapp.model.dto.AlbumResponse;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.retry.annotation.Retry;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,6 +15,7 @@ public interface AlbumAppClient {
 
     @GetMapping("/users/{id}/albums") //URL at which the particular api is located
     @CircuitBreaker(name = "ALBUM-APP", fallbackMethod = "getAlbumsFallback") //The fallback method name
+    @Retry(name = "ALBUM-APP") //Retry
     public List<AlbumResponse> getAlbums(@PathVariable("id") String id);
 
     /**
