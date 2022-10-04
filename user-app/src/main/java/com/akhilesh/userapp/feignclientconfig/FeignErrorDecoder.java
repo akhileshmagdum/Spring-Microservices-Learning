@@ -16,7 +16,7 @@ public class FeignErrorDecoder implements ErrorDecoder {
                 break;
             default:
                 System.out.println(methodKey);
-                System.out.println("God knows what happened");
+                System.out.println("God knows what happened -> Inside the feign error decoder");
         }
         return new Exception();
     }
