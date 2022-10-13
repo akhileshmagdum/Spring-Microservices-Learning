@@ -1,8 +1,6 @@
 package learn;
 
-import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.ProducerConfig;
-import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.clients.producer.*;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,11 +24,26 @@ public class ProducerDemo {
         KafkaProducer<String,String> producer = new KafkaProducer<>(properties);
 
 //      Create producer record
-        ProducerRecord<String,String> producerRecord = new ProducerRecord<>("topic1","hello world");
+        ProducerRecord<String,String> producerRecord = new ProducerRecord<>("topic1","hey hey");
 
 //      Send the data - asynchronous
 //      Using this method alone will not be sufficient because the data might not be written into kafka before the program closes
-        producer.send(producerRecord);
+        producer.send(producerRecord, new Callback() {
+
+            //          This method is executed everytime the message is sent or an exception is occurred
+            @Override
+            public void onCompletion(RecordMetadata recordMetadata, Exception e) {
+                if (e == null) {
+                    log.info("The metadata -> \n" +
+                            "Topic: " +
+                            recordMetadata.topic() +
+                            "\n Partition: "+
+                            recordMetadata.partition());
+                } else {
+                    log.error("Error ->"+e);
+                }
+            }
+        });
 
 //      flush data - synchronous
         producer.flush();
