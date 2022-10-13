@@ -23,28 +23,31 @@ public class ProducerDemo {
 //      Create the producer
         KafkaProducer<String,String> producer = new KafkaProducer<>(properties);
 
+        for (int i = 0; i < 10; i++) {
 //      Create producer record
-        ProducerRecord<String,String> producerRecord = new ProducerRecord<>("topic1","hey hey");
+            ProducerRecord<String, String> producerRecord = new ProducerRecord<>("topic1", "keyNo_"+i, "value_"+i);
 
 //      Send the data - asynchronous
 //      Using this method alone will not be sufficient because the data might not be written into kafka before the program closes
-        producer.send(producerRecord, new Callback() {
+            producer.send(producerRecord, new Callback() {
 
-            //          This method is executed everytime the message is sent or an exception is occurred
-            @Override
-            public void onCompletion(RecordMetadata recordMetadata, Exception e) {
-                if (e == null) {
-                    log.info("The metadata -> \n" +
-                            "Topic: " +
-                            recordMetadata.topic() +
-                            "\n Partition: "+
-                            recordMetadata.partition());
-                } else {
-                    log.error("Error ->"+e);
+                //          This method is executed everytime the message is sent or an exception is occurred
+                @Override
+                public void onCompletion(RecordMetadata recordMetadata, Exception e) {
+                    if (e == null) {
+                        log.info("The metadata -> \n" +
+                                "Topic: " +
+                                recordMetadata.topic() +
+                                "\n Key: " +
+                                producerRecord.key() +
+                                "\n Partition: " +
+                                recordMetadata.partition());
+                    } else {
+                        log.error("Error ->" + e);
+                    }
                 }
-            }
-        });
-
+            });
+        }
 //      flush data - synchronous
         producer.flush();
 
