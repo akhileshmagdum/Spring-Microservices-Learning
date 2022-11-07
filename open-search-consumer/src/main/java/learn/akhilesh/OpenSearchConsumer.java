@@ -1,5 +1,6 @@
 package learn.akhilesh;
 
+import com.google.gson.JsonParser;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -90,9 +91,12 @@ public class OpenSearchConsumer {
                 logger.info("Records received: " + recordCount);
 
                 for (ConsumerRecord<String, String> record : records) {
+
+                    String id = getId(record.value());
                     //send the record to open search
                     IndexRequest indexRequest = new IndexRequest("wikimedia")
-                            .source(record.value(), XContentType.JSON);
+                            .source(record.value(), XContentType.JSON)
+                            .id(id);
                     IndexResponse indexResponse = openSearchClient.index(indexRequest, RequestOptions.DEFAULT);
                     logger.info("Inserted " + indexResponse.getId() + " record to open search");
                 }
@@ -101,6 +105,13 @@ public class OpenSearchConsumer {
 
         //closing opened resources
 
+    }
+
+    private static String getId(String json) {
+        return JsonParser.parseString(json)
+                .getAsJsonObject().get("meta")
+                .getAsJsonObject().get("id")
+                .getAsString();
     }
 
     private static KafkaConsumer<String, String> createKafkaConsumer() {
