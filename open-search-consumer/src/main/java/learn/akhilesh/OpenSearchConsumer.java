@@ -12,8 +12,9 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.serialization.StringDeserializer;
+import org.opensearch.action.bulk.BulkRequest;
+import org.opensearch.action.bulk.BulkResponse;
 import org.opensearch.action.index.IndexRequest;
-import org.opensearch.action.index.IndexResponse;
 import org.opensearch.client.RequestOptions;
 import org.opensearch.client.RestClient;
 import org.opensearch.client.RestHighLevelClient;
@@ -90,6 +91,8 @@ public class OpenSearchConsumer {
                 int recordCount = records.count();
                 logger.info("Records received: " + recordCount);
 
+                BulkRequest bulkRequest = new BulkRequest();
+
                 for (ConsumerRecord<String, String> record : records) {
 
                     String id = getId(record.value());
@@ -97,11 +100,18 @@ public class OpenSearchConsumer {
                     IndexRequest indexRequest = new IndexRequest("wikimedia")
                             .source(record.value(), XContentType.JSON)
                             .id(id);
-                    IndexResponse indexResponse = openSearchClient.index(indexRequest, RequestOptions.DEFAULT);
-                    logger.info("Inserted " + indexResponse.getId() + " record to open search");
+//                    IndexResponse indexResponse = openSearchClient.index(indexRequest, RequestOptions.DEFAULT);
+//                    logger.info("Inserted " + indexResponse.getId() + " record to open search");
+                    bulkRequest.add(indexRequest);
+
                 }
-                kafkaConsumer.commitSync();
-                logger.info("Offsets are committed!");
+                if (bulkRequest.numberOfActions() > 0) {
+                    BulkResponse bulkItemResponses = openSearchClient.bulk(bulkRequest, RequestOptions.DEFAULT);
+                    kafkaConsumer.commitSync();
+                    logger.info("Offsets are committed!");
+                } else {
+                    logger.info("Bulk has less than 0 requests");
+                }
             }
         }
 
@@ -122,7 +132,7 @@ public class OpenSearchConsumer {
         properties.setProperty(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         properties.setProperty(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         properties.setProperty(ConsumerConfig.GROUP_ID_CONFIG, "consumer-open-search-demo");
-        properties.setProperty(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");
+        properties.setProperty(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
         properties.setProperty(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
         return new KafkaConsumer<>(properties);
     }
